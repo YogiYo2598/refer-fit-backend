@@ -1,5 +1,6 @@
 // controllers/referralController.js
 const ReferralRequest = require('../models/referralRequest');
+const User = require('../models/user');
 
 exports.createReferral = async (req, res) => {
   try {
@@ -41,7 +42,11 @@ exports.getIncomingReferrals = async (req, res) => {
     const { company } = req.query;
     if (!company) return res.status(400).json({ message: 'Missing company name' });
 
-    const referrals = await ReferralRequest.findAll({ where: { company } });
+    // const referrals = await ReferralRequest.findAll({ where: { company } });
+    const referrals = await ReferralRequest.findAll({
+      where: { company , status: 'pending'},
+      include: [{ model: User, attributes: ['id', 'name', 'phone', 'email', 'company'] }]
+    });
     res.json(referrals);
   } catch (err) {
     console.error(err);

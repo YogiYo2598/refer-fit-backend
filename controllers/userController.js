@@ -3,14 +3,16 @@ const User = require('../models/user');
 
 exports.createUser = async (req, res) => {
   try {
-    const { name, phone, email, role, company } = req.body;
+    // print req.body
+    console.log(req.body)
+    const { name, phone, email, role, type, company } = req.body;
     if (!name || !phone) {
       return res.status(400).json({ message: 'Name and phone are required' });
     }
 
     const [user, created] = await User.findOrCreate({
       where: { phone },
-      defaults: { name, email, role, company }
+      defaults: { name, email, role, type, company }
     });
 
     res.status(created ? 201 : 200).json({ user, new: created });
