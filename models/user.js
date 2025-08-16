@@ -22,6 +22,16 @@ const User = sequelize.define('User', {
     unique: false,
     allowNull: false
   },
+  resumeName: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: true
+  },
+  resumeURL: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: true
+  },
   type: {
     type: DataTypes.ENUM('fresher', 'experienced'),
     defaultValue: 'experienced'

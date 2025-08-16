@@ -4,7 +4,7 @@ const User = require('../models/user');
 exports.createUser = async (req, res) => {
   try {
     // print req.body
-    console.log(req.body)
+    // console.log(req.body)
     const { name, phone, email, role, type, company } = req.body;
     if (!name || !phone) {
       return res.status(400).json({ message: 'Name and phone are required' });
@@ -55,5 +55,25 @@ exports.updateUser = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to update user' });
+  }
+};
+
+
+exports.updateUserResumeDetails = async(req, res) => {
+  try {
+    const { id } = req.params;
+    const { resumeName, resumeURL } = req.body;
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.resumeName = resumeName || user.resumeName;
+    user.resumeURL = resumeURL || user.resumeURL;
+
+    await user.save();
+    res.json({message: 'User updated with resume details!'});
+
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update user resume details' });
   }
 };

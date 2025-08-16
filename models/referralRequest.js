@@ -22,7 +22,7 @@ const ReferralRequest = sequelize.define('ReferralRequest', {
     allowNull: false
   },
   status: {
-    type: DataTypes.ENUM('pending', 'referred', 'rejected'),
+    type: DataTypes.ENUM('pending', 'referred', 'rejected', 'already_referred', 'position_closed'),
     defaultValue: 'pending'
   },
   referred_by_user: {

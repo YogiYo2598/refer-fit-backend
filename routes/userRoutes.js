@@ -13,4 +13,7 @@ router.get('/', userController.getUser);
 // Update user by ID
 router.put('/:id', userController.updateUser);
 
+// Update Resume details
+router.post('/resume/:id', userController.updateUserResumeDetails);
+
 module.exports = router;

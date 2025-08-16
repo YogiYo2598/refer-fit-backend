@@ -6,18 +6,29 @@ const s3 = require('../config/s3');
 const path = require('path');
 require('dotenv').config();
 
+
 const router = express.Router();
 
 const upload = multer({
   storage: multerS3({
     s3: s3,
     bucket: process.env.S3_BUCKET_NAME,
-    acl: 'public-read',
+    // acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
-      const filename = `resumes/${Date.now()}-${file.originalname}`;
+
+      let originalFilename = req.params.filename;
+  
+      // check if file name is empty
+      if (!originalFilename || originalFilename.trim() === "")
+        {
+          originalFilename = `${Date.now()}-${file.originalname}`;
+        }
+      filename = `resumes/${originalFilename}`;
+      // console.log(filename)
+      // const filename = `resumes/${Date.now()}-${file.originalname}`;
       cb(null, filename);
     }
   }),
@@ -31,7 +42,7 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 });
 
-router.post('/upload/resume', upload.single('resume'), (req, res) => {
+router.post('/upload/resume/:filename', upload.single('resume'), (req, res) => {
   res.json({
     message: 'Resume uploaded successfully',
     url: req.file.location

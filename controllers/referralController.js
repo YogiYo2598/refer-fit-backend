@@ -45,7 +45,7 @@ exports.getIncomingReferrals = async (req, res) => {
     // const referrals = await ReferralRequest.findAll({ where: { company } });
     const referrals = await ReferralRequest.findAll({
       where: { company , status: 'pending'},
-      include: [{ model: User, attributes: ['id', 'name', 'phone', 'email', 'company'] }]
+      include: [{ model: User, attributes: ['name', 'email'] }]
     });
     res.json(referrals);
   } catch (err) {
@@ -57,8 +57,8 @@ exports.getIncomingReferrals = async (req, res) => {
 exports.updateReferralStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
-    if (!['referred', 'rejected'].includes(status)) {
+    const { status, referredBy } = req.body;
+    if (!['referred', 'rejected', 'already_referred', 'position_closed'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
@@ -66,6 +66,7 @@ exports.updateReferralStatus = async (req, res) => {
     if (!referral) return res.status(404).json({ message: 'Referral not found' });
 
     referral.status = status;
+    referral.referred_by_user = referredBy
     await referral.save();
 
     res.json({ message: 'Referral status updated', referral });

@@ -15,8 +15,8 @@ const Company = sequelize.define('Company', {
   },
   logo_url : {
     type: DataTypes.STRING,
-    unique: true,
-    allowNull: false
+    unique: false,
+    allowNull: true
   }
 }, {
   timestamps: true
