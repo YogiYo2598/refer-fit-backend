@@ -15,12 +15,14 @@ async function sendNotification(userID, jobId, company) {
 
   topUsers.forEach(user => {
     // console.log(`Notification - ${user.name}`);
-    sendWhatsAppNotification({ to: "91" + user.phone,
-                                     referrer: user.name, 
-                                     candidate: candidate.name, 
-                                     email: candidate.email, 
-                                     jobId: jobId,
-                                     resumeURL: candidate.resumeURL });
+    sendWhatsAppNotification({
+      to: "91" + user.phone,
+      referrer: user.name,
+      candidate: candidate.name,
+      email: candidate.email,
+      jobId: jobId,
+      resumeURL: candidate.resumeURL
+    });
   });
 
 
