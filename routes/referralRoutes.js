@@ -16,4 +16,8 @@ router.get('/incoming', referralController.getIncomingReferrals);
 // POST /referrals/:id/mark
 router.post('/:id/mark', referralController.updateReferralStatus);
 
+// DELETE /referrals/:id
+router.delete('/:id', referralController.deleteReferral);
+
+
 module.exports = router;

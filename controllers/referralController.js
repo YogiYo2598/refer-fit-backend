@@ -1,6 +1,30 @@
 // controllers/referralController.js
 const ReferralRequest = require('../models/referralRequest');
 const User = require('../models/user');
+const { sendWhatsAppNotification } = require('../services/msg91');
+
+async function sendNotification(userID, jobId, company) {
+
+  const candidate = await User.findByPk(userID);
+
+  const topUsers = await User.findAll({
+    where: { company },
+    limit: 3,
+    order: [['createdAt', 'DESC']] // change this to your own sort logic if needed
+  });
+
+  topUsers.forEach(user => {
+    // console.log(`Notification - ${user.name}`);
+    sendWhatsAppNotification({ to: "91" + user.phone,
+                                     referrer: user.name, 
+                                     candidate: candidate.name, 
+                                     email: candidate.email, 
+                                     jobId: jobId,
+                                     resumeURL: candidate.resumeURL });
+  });
+
+
+}
 
 exports.createReferral = async (req, res) => {
   try {
@@ -16,6 +40,8 @@ exports.createReferral = async (req, res) => {
       jobId,
       resumeUrl
     });
+
+    sendNotification(userId, jobId, company);
 
     res.status(201).json({ message: 'Referral request created', referral });
   } catch (err) {
@@ -44,7 +70,7 @@ exports.getIncomingReferrals = async (req, res) => {
 
     // const referrals = await ReferralRequest.findAll({ where: { company } });
     const referrals = await ReferralRequest.findAll({
-      where: { company , status: 'pending'},
+      where: { company, status: 'pending' },
       include: [{ model: User, attributes: ['name', 'email'] }]
     });
     res.json(referrals);
@@ -73,5 +99,21 @@ exports.updateReferralStatus = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to update referral' });
+  }
+};
+
+exports.deleteReferral = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await ReferralRequest.destroy({ where: { id } });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Referral request not found" });
+    }
+
+    res.status(200).json({ message: "Referral request deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting referral:", err);
+    res.status(500).json({ message: "Failed to delete referral" });
   }
 };
